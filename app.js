@@ -3,9 +3,14 @@
 // load modules
 const express = require('express');
 const morgan = require('morgan');
+const { Sequelize } = require('sequelize');
+const { User } = require('./models');
+const bcrypt = require('bcryptjs');
+const auth = require('basic-auth');
 
 // variable to enable global error logging
-const enableGlobalErrorLogging = process.env.ENABLE_GLOBAL_ERROR_LOGGING === 'true';
+const enableGlobalErrorLogging =
+  process.env.ENABLE_GLOBAL_ERROR_LOGGING === 'true';
 
 // create the Express app
 const app = express();
@@ -13,17 +18,30 @@ const app = express();
 // setup morgan which gives us http request logging
 app.use(morgan('dev'));
 
+const sequelize = new Sequelize({
+  dialect: 'sqlite',
+  storage: 'fsjstd-restapi.db'
+});
+
+sequelize
+  .authenticate()
+  .then(() => {
+    console.log('Connection to database was successful');
+  })
+  .catch((err) => {
+    console.error('Connection to database failed:', err);
+  });
 // setup a friendly greeting for the root route
 app.get('/', (req, res) => {
   res.json({
-    message: 'Welcome to the REST API project!',
+    message: 'Welcome to the REST API project!'
   });
 });
 
 // send 404 if no other route matched
 app.use((req, res) => {
   res.status(404).json({
-    message: 'Route Not Found',
+    message: 'Route Not Found'
   });
 });
 
@@ -35,7 +53,7 @@ app.use((err, req, res, next) => {
 
   res.status(err.status || 500).json({
     message: err.message,
-    error: {},
+    error: {}
   });
 });
 
