@@ -1,13 +1,11 @@
 'use strict';
 
-// load modules
+// load required dependencies
 const express = require('express');
 const morgan = require('morgan');
-const { Sequelize } = require('sequelize');
-const { User } = require('./models');
-const bcrypt = require('bcryptjs');
-const auth = require('basic-auth');
-
+const { sequelize, User } = require('./models');
+const usersRouter = require('./routes/users'); // Import the users router
+const coursesRouter = require('./routes/courses'); // Import the courses router
 // variable to enable global error logging
 const enableGlobalErrorLogging =
   process.env.ENABLE_GLOBAL_ERROR_LOGGING === 'true';
@@ -17,26 +15,26 @@ const app = express();
 
 // setup morgan which gives us http request logging
 app.use(morgan('dev'));
-
-const sequelize = new Sequelize({
-  dialect: 'sqlite',
-  storage: 'fsjstd-restapi.db'
-});
-
-sequelize
-  .authenticate()
-  .then(() => {
+app.use(express.json());
+(async () => {
+  try {
+    await sequelize.authenticate();
     console.log('Connection to database was successful');
-  })
-  .catch((err) => {
+  } catch (error) {
     console.error('Connection to database failed:', err);
-  });
+  }
+})();
+
 // setup a friendly greeting for the root route
+
 app.get('/', (req, res) => {
   res.json({
     message: 'Welcome to the REST API project!'
   });
 });
+
+app.use('/api', usersRouter); // Use the routers for the /api path
+app.use('/api', coursesRouter); // Use the courses router
 
 // send 404 if no other route matched
 app.use((req, res) => {
