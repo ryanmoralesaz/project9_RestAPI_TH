@@ -8,9 +8,10 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      // define association here
+      // define association here using the userID foreign key
+      // Add a one-to-one association between the Course and User models using the belongsTo() method.
       Course.belongsTo(models.User, {
-        foreignKey: 'userId'
+        foreignKey: 'userId',
       });
     }
   }
@@ -18,7 +19,9 @@ module.exports = (sequelize, DataTypes) => {
     {
       title: {
         type: DataTypes.STRING,
+        // title is required
         allowNull: false,
+        // validation message for empty field
         validate: {
           notEmpty: {
             msg: 'Title is a required field'
@@ -27,7 +30,9 @@ module.exports = (sequelize, DataTypes) => {
       },
       description: {
         type: DataTypes.TEXT,
+        // description is required
         allowNull: false,
+        // validation message for empty field
         validate: {
           notEmpty: {
             msg: 'Description is a required field'

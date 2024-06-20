@@ -9,8 +9,10 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // assign the userID to the User foreign key
+      // add a one-to-many association between the User and Course model using the hasMany() method
+      // add an as alias to specify the relationship to courses
       User.hasMany(models.Course, {
-        foreignKey: 'userId'
+        foreignKey: 'userId',
       });
     }
   }
@@ -18,7 +20,9 @@ module.exports = (sequelize, DataTypes) => {
     {
       firstName: {
         type: DataTypes.STRING,
+        // firstName is required
         allowNull: false,
+        // validation message for empty field
         validate: {
           notEmpty: {
             msg: 'First name is a required field'
@@ -27,7 +31,9 @@ module.exports = (sequelize, DataTypes) => {
       },
       lastName: {
         type: DataTypes.STRING,
+        // lastName is required
         allowNull: false,
+        // validation message for empty field
         validate: {
           notEmpty: {
             msg: 'Last name is a required field'
@@ -36,10 +42,13 @@ module.exports = (sequelize, DataTypes) => {
       },
       emailAddress: {
         type: DataTypes.STRING,
+        // email is required
         allowNull: false,
+        // email must be unique
         unique: {
           msg: 'This email address is already associated with another user.'
         },
+        // validation message for empty field and formatted as email
         validate: {
           notEmpty: {
             msg: 'eMail is required'
@@ -51,7 +60,9 @@ module.exports = (sequelize, DataTypes) => {
       },
       password: {
         type: DataTypes.STRING,
+        // password is required
         allowNull: false,
+        // validation message for empty field
         validate: {
           notEmpty: {
             msg: 'Password is required'

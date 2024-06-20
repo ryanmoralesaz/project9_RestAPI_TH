@@ -3,7 +3,7 @@
 // load required dependencies
 const express = require('express');
 const morgan = require('morgan');
-const { sequelize, User } = require('./models');
+const { sequelize } = require('./models');
 const usersRouter = require('./routes/users'); // Import the users router
 const coursesRouter = require('./routes/courses'); // Import the courses router
 // variable to enable global error logging
@@ -21,7 +21,7 @@ app.use(express.json());
     await sequelize.authenticate();
     console.log('Connection to database was successful');
   } catch (error) {
-    console.error('Connection to database failed:', err);
+    console.error('Connection to database failed:', error);
   }
 })();
 
@@ -44,7 +44,7 @@ app.use((req, res) => {
 });
 
 // setup a global error handler
-app.use((err, req, res, next) => {
+app.use((err, req, res) => {
   if (enableGlobalErrorLogging) {
     console.error(`Global error handler: ${JSON.stringify(err.stack)}`);
   }
