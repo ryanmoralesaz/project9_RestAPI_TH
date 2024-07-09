@@ -84,21 +84,36 @@ router.get(`/courses/:id`, async (req, res) => {
 // POST /api/courses
 // create a new course if the user is authenticated
 router.post('/courses', authenticateUser, async (req, res) => {
+  // destructure the request body to retrieve the required values
+  const { title, description, estimatedTime, materialsNeeded } = req.body;
+  // return early if any of the values are null or undefined
+  if (!title || !description) {
+    return res.status(400).json({ message: 'Both title and description are required.' });
+  }
+
   try {
     // initialize the body of the request to the course variable
     const course = req.body;
     // Associate the coures with the authenticated user
     course.userId = req.currentUser.id;
     // asynchronously wait for the course to be created with the sequelize create() method
-    await Course.create(course);
+    // assign it to a new course variable and interpolate it in the response location header
+    const newCourse = await Course.create(course);
     // return a resource created status and a location header of the new resource
-    res.status(201).location(`/api/courses/${course.id}`).end();
+    res.status(201).location(`/api/courses/${newCourse.id}`).end();
   } catch (error) {
-    // send a 400 bad request error to the client with the error message
-    console.error('Error creating the course:', error);
-    res
-      .status(400)
-      .json({ message: 'There was an error creating the course', error });
+    if (error.name === 'SequelizeValidationError') {
+      const errors = error.errors.map((err) => err.message);
+      // send a 400 bad request error to the client with the destructured error message
+      res
+        .status(400)
+        .json({ errors });
+    } else {
+      console.error('Error creating the course:', error);
+      res
+        .status(500)
+        .json({ message: 'There was an error creating the course', error });
+    }
   }
 });
 
@@ -106,6 +121,15 @@ router.post('/courses', authenticateUser, async (req, res) => {
 // We're going to update the corresponding course that matches the id parameter
 // if the user is authenticated
 router.put('/courses/:id', authenticateUser, async (req, res) => {
+  // retrieve the required fields from the body through destructuring
+  const { title, description, estimatedTime, materialsNeeded } = req.body;
+
+  // ensure the required fields are valid, otherwise return early
+  if (!title || !description) {
+    return res.status(400).json({
+      message: 'Title and description are required.'
+    });
+  }
   try {
     // initialize the requested course to the course const by its primary key that matches the params id
     const course = await Course.findByPk(req.params.id);

@@ -27,9 +27,13 @@ router.get('/users', authenticateUser, async (req, res) => {
 
 // POST /api/users - create a new user
 router.post('/users', async (req, res) => {
+  // try destructuring the body into the required fields
+  const { firstName, lastName, emailAddress, password } = req.body;
+  // return early if any of the fields are null/undefined
+  if (!firstName || !lastName || !emailAddress || !password) {
+    return res.status(400).json({ message: 'All fields are required (firstName, lastName, emailAddress, password)' });
+  }
   try {
-    // use destructuring to get the necessary fields from the request body
-    const { firstName, lastName, emailAddress, password } = req.body;
     // use hashing on the user's password before storing it in the database
     // utilize the integer 10 for base-10 decimal system
     const hashedPassword = bcrypt.hashSync(password, 10);

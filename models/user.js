@@ -18,6 +18,11 @@ module.exports = (sequelize, DataTypes) => {
   }
   User.init(
     {
+      id: {
+        type: DataTypes.INTEGER,
+        autoIncrement: true,
+        primaryKey: true,
+      },
       firstName: {
         type: DataTypes.STRING,
         // firstName is required
@@ -46,7 +51,7 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
         // email must be unique
         unique: {
-          msg: 'This email address is already associated with another user.'
+          msg: 'This email is already in use in the database.'
         },
         // validation message for empty field and formatted as email
         validate: {
