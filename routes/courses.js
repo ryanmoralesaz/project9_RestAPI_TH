@@ -84,13 +84,6 @@ router.get(`/courses/:id`, async (req, res) => {
 // POST /api/courses
 // create a new course if the user is authenticated
 router.post('/courses', authenticateUser, async (req, res) => {
-  // destructure the request body to retrieve the required values
-  const { title, description, estimatedTime, materialsNeeded } = req.body;
-  // return early if any of the values are null or undefined
-  if (!title || !description) {
-    return res.status(400).json({ message: 'Both title and description are required.' });
-  }
-
   try {
     // initialize the body of the request to the course variable
     const course = req.body;
@@ -121,15 +114,6 @@ router.post('/courses', authenticateUser, async (req, res) => {
 // We're going to update the corresponding course that matches the id parameter
 // if the user is authenticated
 router.put('/courses/:id', authenticateUser, async (req, res) => {
-  // retrieve the required fields from the body through destructuring
-  const { title, description, estimatedTime, materialsNeeded } = req.body;
-
-  // ensure the required fields are valid, otherwise return early
-  if (!title || !description) {
-    return res.status(400).json({
-      message: 'Title and description are required.'
-    });
-  }
   try {
     // initialize the requested course to the course const by its primary key that matches the params id
     const course = await Course.findByPk(req.params.id);
