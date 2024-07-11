@@ -4,7 +4,9 @@
   "description": "",
   "main": "app.js",
   "scripts": {
-    "dev": "node sync.js && node seed/ && nodemon ./app.js",
+    "dev": "nodemon ./app.js",
+    "reset-db": "node sync.js && npm run seed",
+    "migrate": "npx sequelize-cli db:migrate",
     "seed": "cross-env DB_ENABLE_LOGGING=true node './seed/index.js'",
     "start": "node ./app.js"
   },
